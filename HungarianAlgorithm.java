@@ -1,67 +1,91 @@
 import java.util.Arrays;
 
 public class HungarianAlgorithm {
+    private static final int MAXN = 40; // 假设最多有 40 个职位或候选人
+    private int[][] costMatrix = new int[MAXN][MAXN]; // 成本矩阵
+    private int[] matchL = new int[MAXN]; // 左部匹配结果
+    private int[] matchR = new int[MAXN]; // 右部匹配结果
+    private int[] labelL = new int[MAXN]; // 左部顶标
+    private int[] labelR = new int[MAXN]; // 右部顶标
+    private boolean[] seen = new boolean[MAXN];
+    private int[] slack = new int[MAXN];
+    private int N; // 实际使用的节点数量
 
-    private static final int MAXN = 4;
-    private static final int MAXM = 4;
-    private int[][] Map = new int[MAXM][MAXN]; // 成本矩阵
-    private int[] p = new int[MAXN];           // 记录匹配情况
-    private boolean[] vis = new boolean[MAXN]; // 记录访问状态
-    private int N = 4;                         // 四个职位
+    public HungarianAlgorithm(int n) {
+        this.N = n;
+    }
 
-    private boolean match(int i) {
-        for (int j = 0; j < N; ++j) { // 注意Java数组下标从0开始
-            if (Map[i][j] > 0 && !vis[j]) {
-                vis[j] = true;
-                if (p[j] == -1 || match(p[j])) {
-                    p[j] = i;
-                    return true;
+    private void initLabels() {
+        Arrays.fill(labelL, Integer.MIN_VALUE);
+        Arrays.fill(labelR, 0);
+        Arrays.fill(matchL, -1);
+        Arrays.fill(matchR, -1);
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                labelL[i] = Math.max(labelL[i], costMatrix[i][j]);
+            }
+        }
+    }
+
+    private boolean tryKuhn(int v) {
+        seen[v] = true;
+        for (int u = 0; u < N; u++) {
+            if (labelL[v] + labelR[u] - costMatrix[v][u] == 0) {
+                if (!seen[u]) {
+                    seen[u] = true;
+                    if (matchR[u] == -1 || tryKuhn(matchR[u])) {
+                        matchR[u] = v;
+                        matchL[v] = u;
+                        return true;
+                    }
                 }
+            } else {
+                slack[u] = Math.min(slack[u], labelL[v] + labelR[u] - costMatrix[v][u]);
             }
         }
         return false;
     }
 
-    private int hungarian() {
-        int cnt = 0;
-        Arrays.fill(p, -1); // 使用-1初始化表示未匹配
-        for (int i = 0; i < N; ++i) {
-            Arrays.fill(vis, false);
-            if (match(i)) {
-                cnt++;
+    public void run() {
+        initLabels();
+        for (int i = 0; i < N; i++) {
+            Arrays.fill(slack, Integer.MAX_VALUE);
+            while (true) {
+                Arrays.fill(seen, false);
+                if (tryKuhn(i)) break;
+                int delta = Integer.MAX_VALUE;
+                for (int j = 0; j < N; j++) {
+                    if (!seen[j]) {
+                        delta = Math.min(delta, slack[j]);
+                    }
+                }
+                for (int j = 0; j < N; j++) {
+                    if (seen[j]) labelL[j] -= delta;
+                    if (seen[j]) labelR[j] += delta;
+                    else slack[j] -= delta;
+                }
             }
         }
-        return cnt;
     }
 
     public static void main(String[] args) {
         int[][] proficiencies = {
-            {1, 2, 3, 4}, // A的熟练度
-            {4, 1, 2, 3}, // B的熟练度
-            {3, 4, 1, 2}, // C的熟练度
-            {2, 3, 4, 1}  // D的熟练度
+            {1, 2, 3, 4}, 
+            {2, 3, 4, 1}, 
+            {3, 4, 1, 2}, 
+            {4, 1, 2, 3}
         };
 
-        HungarianAlgorithm ha = new HungarianAlgorithm();
-        
-        // 找到熟练度的最大值
-        int maxProficiency = 4;
-        
-        // 将熟练度转换为成本
-        for (int i = 0; i < proficiencies.length; i++) {
-            for (int j = 0; j < proficiencies[i].length; j++) {
-                ha.Map[i][j] = maxProficiency - proficiencies[i][j];
-            }
-        }
+        HungarianAlgorithm km = new HungarianAlgorithm(4);
+        km.costMatrix = proficiencies;
 
-        ha.hungarian();
+        km.run();
 
-        // 输出匹配结果
         String[] candidates = {"A", "B", "C", "D"};
         String[] positions = {"Java", "Python", "C++", "SQL"};
-        for (int j = 0; j < ha.N; ++j) {
-            if (ha.p[j] != -1) {
-                System.out.println(candidates[ha.p[j]] + " is assigned to " + positions[j]);
+        for (int i = 0; i < km.N; i++) {
+            if (km.matchL[i] != -1) {
+                System.out.println(candidates[i] + " is assigned to " + positions[km.matchL[i]]);
             }
         }
     }
