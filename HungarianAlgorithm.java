@@ -3,13 +3,25 @@ import java.util.Arrays;
 public class HungarianAlgorithm {
     private static final int MAXN = 40; // 假设最多有 40 个职位或候选人
     private int[][] costMatrix = new int[MAXN][MAXN]; // 成本矩阵
-    private int[] matchL = new int[MAXN]; // 左部匹配结果
-    private int[] matchR = new int[MAXN]; // 右部匹配结果
-    private int[] labelL = new int[MAXN]; // 左部顶标
-    private int[] labelR = new int[MAXN]; // 右部顶标
-    private boolean[] seen = new boolean[MAXN];
-    private int[] slack = new int[MAXN];
-    private int N; // 实际使用的节点数量
+    private final int[] matchL = new int[MAXN]; // 左部匹配结果
+    private final int[] matchR = new int[MAXN]; // 右部匹配结果
+    private final int[] labelL = new int[MAXN]; // 左部顶标
+    private final int[] labelR = new int[MAXN]; // 右部顶标
+    private final boolean[] seen = new boolean[MAXN];
+    private final int[] slack = new int[MAXN];
+    private final int N; // 实际使用的节点数量
+
+    public static void solve(int[][] proficiencies, String[] candidates, String[] positions) {
+        HungarianAlgorithm km = new HungarianAlgorithm(4);
+        km.costMatrix = proficiencies;
+        km.run();
+
+        for (int i = 0; i < km.N; i++) {
+            if (km.matchL[i] != -1) {
+                System.out.println(candidates[i] + " is assigned to " + positions[km.matchL[i]]);
+            }
+        }
+    }
 
     public HungarianAlgorithm(int n) {
         this.N = n;
@@ -46,7 +58,7 @@ public class HungarianAlgorithm {
         return false;
     }
 
-    public void run() {
+    private void run() {
         initLabels();
         for (int i = 0; i < N; i++) {
             Arrays.fill(slack, Integer.MAX_VALUE);
@@ -69,24 +81,14 @@ public class HungarianAlgorithm {
     }
 
     public static void main(String[] args) {
-        int[][] proficiencies = {
-            {1, 2, 3, 4}, 
-            {2, 3, 4, 1}, 
-            {3, 4, 1, 2}, 
-            {4, 1, 2, 3}
-        };
-
-        HungarianAlgorithm km = new HungarianAlgorithm(4);
-        km.costMatrix = proficiencies;
-
-        km.run();
-
-        String[] candidates = {"A", "B", "C", "D"};
-        String[] positions = {"Java", "Python", "C++", "SQL"};
-        for (int i = 0; i < km.N; i++) {
-            if (km.matchL[i] != -1) {
-                System.out.println(candidates[i] + " is assigned to " + positions[km.matchL[i]]);
-            }
+        if (args.length != 1) {
+            System.out.println("Usage: java HungarianAlgorithm <file_name>");
+            return;
         }
+
+        String fileName = args[0];
+        FileParser fileParser = new FileParser(fileName);
+        System.out.println("The assignment solution to " + fileName + " is:");
+        solve(fileParser.getProficiencies(), fileParser.getCandidates(), fileParser.getPositions());
     }
 }

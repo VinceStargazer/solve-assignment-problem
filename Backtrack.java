@@ -42,16 +42,14 @@ public class Backtrack {
     }
 
     public static void main(String[] args) {
-        int[][] proficiencies = {
-                {1, 2, 3, 4}, // A的熟练度
-                {4, 1, 2, 3}, // B的熟练度
-                {3, 4, 1, 2}, // C的熟练度
-                {2, 3, 4, 1}  // D的熟练度
-        };
+        if (args.length != 1) {
+            System.out.println("Usage: java Backtrack <file_name>");
+            return;
+        }
 
-        // 输出匹配结果
-        String[] candidates = {"A", "B", "C", "D"};
-        String[] positions = {"Java", "Python", "C++", "SQL"};
-        solve(proficiencies, candidates, positions);
+        String fileName = args[0];
+        FileParser fileParser = new FileParser(fileName);
+        System.out.println("The assignment solution to " + fileName + " is:");
+        solve(fileParser.getProficiencies(), fileParser.getCandidates(), fileParser.getPositions());
     }
 }
