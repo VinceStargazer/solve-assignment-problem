@@ -1,8 +1,6 @@
-package tests;
-
 import java.util.*;
 
-public class genTest {
+public class GenTest {
     public static String generateLine(int n) {
         StringBuilder line = new StringBuilder();
         Random random = new Random();
@@ -18,7 +16,7 @@ public class genTest {
     }
 
     public static void main(String[] args) {
-        int n = 40; // Example: Generate a line with 5 numbers
+        int n = 12; // Example: Generate a line with 5 numbers
         for (int i = 0; i < n; i++) {
             String line = generateLine(n);
             System.out.println(line);
