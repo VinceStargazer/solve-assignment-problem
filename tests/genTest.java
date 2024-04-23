@@ -3,38 +3,25 @@ package tests;
 import java.util.*;
 
 public class genTest {
-    public static List<List<Integer>> generatePermutations(int n) {
-        List<List<Integer>> permutations = new ArrayList<>();
+    public static String generateLine(int n) {
+        StringBuilder line = new StringBuilder();
         Random random = new Random();
 
         for (int i = 0; i < n; i++) {
-            List<Integer> permutation = new ArrayList<>();
-            for (int j = 1; j <= n; j++) {
-                permutation.add(j);
+            int randomNumber = random.nextInt(10) + 1; // Generate a random number between 1 and 10
+            line.append(randomNumber);
+            if (i < n - 1) {
+                line.append(","); // Add comma if it's not the last number
             }
-            Collections.shuffle(permutation, random);
-            permutations.add(permutation);
         }
-        return permutations;
+        return line.toString();
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the number of lines to generate: ");
-        int n = scanner.nextInt();
-
-        List<List<Integer>> permutations = generatePermutations(n);
-
-        // Print the generated permutations
-        for (List<Integer> permutation : permutations) {
-            for (int i = 0; i < permutation.size(); i++) {
-                System.out.print(permutation.get(i));
-                if (i < permutation.size() - 1) {
-                    System.out.print(",");
-                }
-            }
-            System.out.println();
+        int n = 40; // Example: Generate a line with 5 numbers
+        for (int i = 0; i < n; i++) {
+            String line = generateLine(n);
+            System.out.println(line);
         }
-        scanner.close();
     }
 }
