@@ -111,6 +111,7 @@ public class KuhnMunkres implements SolveAssignment {
 
     @Override
     public void printResult() {
+        System.out.println("The maximum score is " + ans + " by: ");
         for (int i = 0; i < maxn; i++) {
             if (matchx[i] != -1) {
                 System.out.println(candidates[i] + " is assigned to " + positions[matchx[i]]);

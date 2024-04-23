@@ -49,6 +49,7 @@ public class Backtrack implements SolveAssignment {
 
     @Override
     public void printResult() {
+        System.out.println("The maximum score is " + max_match + " by: ");
         for (int i = 0; i < candidates.length; i++) {
             if (assignment[i] != -1) {
                 System.out.println(candidates[i] + " is assigned to " + positions[assignment[i]]);
